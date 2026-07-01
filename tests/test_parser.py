@@ -47,4 +47,24 @@ def test_malformed_operation_does_not_crash_parse(caplog):
 
 def test_total_valid_operations_extracted():
     operations = parse_spec(load_fixture())
-    assert len(operations) == 2
+    assert len(operations) == 3
+
+
+def test_request_body_ref_is_resolved_inline():
+    operations = parse_spec(load_fixture())
+    update_realm = next(op for op in operations if op.operation_id == "updateRealm")
+    assert update_realm.request_body is not None
+    schema = update_realm.request_body.schema
+    assert "$ref" not in schema
+    assert schema["properties"]["accessTokenLifespan"] == {"type": "integer"}
+
+
+def test_request_body_ref_cycle_does_not_recurse_infinitely():
+    operations = parse_spec(load_fixture())
+    update_realm = next(op for op in operations if op.operation_id == "updateRealm")
+    assert update_realm.request_body is not None
+    self_schema = update_realm.request_body.schema["properties"]["self"]
+    assert (
+        self_schema == {"$ref": "#/components/schemas/RealmRepresentation"}
+        or self_schema is True
+    )

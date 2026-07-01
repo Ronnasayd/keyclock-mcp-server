@@ -4,6 +4,7 @@ import logging
 import re
 from typing import Any
 
+from keycloak_mcp.openapi.deref import resolve_refs
 from keycloak_mcp.openapi.models import Operation, Param, RequestBodySchema
 
 HTTP_METHODS = {"get", "post", "put", "delete", "patch"}
@@ -12,19 +13,26 @@ _SLUG_NON_ALNUM = re.compile(r"[^a-zA-Z0-9]+")
 logger = logging.getLogger(__name__)
 
 
+def _resolve_schema(raw_schema: dict[str, Any], spec: dict[str, Any]) -> dict[str, Any]:
+    resolved = resolve_refs(raw_schema, spec)
+    return resolved if isinstance(resolved, dict) else raw_schema
+
+
 def parse_spec(spec: dict[str, Any]) -> list[Operation]:
     operations: list[Operation] = []
     for path, path_item in spec.get("paths", {}).items():
         for method, raw_operation in path_item.items():
             if method not in HTTP_METHODS:
                 continue
-            operation = _parse_operation(path, method, raw_operation)
+            operation = _parse_operation(path, method, raw_operation, spec)
             if operation is not None:
                 operations.append(operation)
     return operations
 
 
-def _parse_operation(path: str, method: str, raw_operation: Any) -> Operation | None:
+def _parse_operation(
+    path: str, method: str, raw_operation: Any, spec: dict[str, Any]
+) -> Operation | None:
     try:
         return Operation(
             operation_id=_resolve_operation_id(path, method, raw_operation),
@@ -32,8 +40,8 @@ def _parse_operation(path: str, method: str, raw_operation: Any) -> Operation | 
             or not raw_operation["operationId"],
             method=method,
             path=path,
-            params=_parse_params(raw_operation.get("parameters", [])),
-            request_body=_parse_request_body(raw_operation.get("requestBody")),
+            params=_parse_params(raw_operation.get("parameters", []), spec),
+            request_body=_parse_request_body(raw_operation.get("requestBody"), spec),
             response_schema=raw_operation.get("responses", {}),
         )
     except (AttributeError, TypeError, KeyError) as exc:
@@ -51,19 +59,21 @@ def _resolve_operation_id(path: str, method: str, raw_operation: dict[str, Any])
     return synthesized
 
 
-def _parse_params(raw_params: Any) -> list[Param]:
+def _parse_params(raw_params: Any, spec: dict[str, Any]) -> list[Param]:
     return [
         Param(
             name=raw_param["name"],
             location=raw_param["in"],
             required=raw_param.get("required", False),
-            schema=raw_param.get("schema", {}),
+            schema=_resolve_schema(raw_param.get("schema", {}), spec),
         )
         for raw_param in raw_params
     ]
 
 
-def _parse_request_body(raw_body: dict[str, Any] | None) -> RequestBodySchema | None:
+def _parse_request_body(
+    raw_body: dict[str, Any] | None, spec: dict[str, Any]
+) -> RequestBodySchema | None:
     if not raw_body:
         return None
     content = raw_body.get("content", {})
@@ -71,5 +81,5 @@ def _parse_request_body(raw_body: dict[str, Any] | None) -> RequestBodySchema | 
     return RequestBodySchema(
         required=raw_body.get("required", False),
         content_type=content_type,
-        schema=media.get("schema", {}),
+        schema=_resolve_schema(media.get("schema", {}), spec),
     )

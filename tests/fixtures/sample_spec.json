@@ -37,6 +37,39 @@
         "parameters": "not-a-list",
         "responses": { "200": { "description": "OK" } }
       }
+    },
+    "/admin/realms/{realm}": {
+      "put": {
+        "operationId": "updateRealm",
+        "parameters": [
+          {
+            "name": "realm",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RealmRepresentation" }
+            }
+          }
+        },
+        "responses": { "204": { "description": "No Content" } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RealmRepresentation": {
+        "type": "object",
+        "properties": {
+          "accessTokenLifespan": { "type": "integer" },
+          "self": { "$ref": "#/components/schemas/RealmRepresentation" }
+        }
+      }
     }
   }
 }
