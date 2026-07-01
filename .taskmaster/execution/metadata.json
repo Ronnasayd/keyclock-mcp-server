@@ -1,0 +1,30 @@
+{
+  "projectName": "keycloak-mcp-server",
+  "version": "1.0.0",
+  "createdAt": "2026-07-01T00:00:00Z",
+  "updatedAt": "2026-07-01T00:00:00Z",
+  "description": "MCP server exposing Keycloak Admin REST API as MCP tools, generated via metaprogramming from vendored OpenAPI spec.",
+  "source": ".specs/features/keycloak-mcp-server/Tasks.md",
+  "testCommands": {
+    "unit": "pytest tests/test_config.py tests/test_parser.py tests/test_auth.py tests/test_errors.py tests/test_generator.py",
+    "coverage": "pytest --cov=keycloak_mcp.tools.generator --cov=keycloak_mcp.auth"
+  },
+  "executionWaves": {
+    "wave1_serial": [1],
+    "wave1_parallel": [2, 3],
+    "wave2_parallel": [4, 5],
+    "wave3_parallel": [6, 7, 8, 9, 10, 11],
+    "wave4_parallel": [12, 13, 14],
+    "wave5_parallel": [15, 16],
+    "wave6_parallel": [17, 18, 19, 20]
+  },
+  "criticalPath": [1, 4, 10, 11, 13, 15, 17],
+  "parallelizationNotes": {
+    "wave1": "T0.2 (2), T0.3 (3) independent of T0.1 (1) and of each other — run in parallel.",
+    "wave2": "T1.1 (4) and T1.2 (5) both depend only on T0.1 (1) — parallel.",
+    "wave3": "T1.3 (6) depends on T1.2 (5); T2.1-T2.5 (7-11) depend only on T1.1 (4) — all run in parallel within this wave.",
+    "wave4": "T3.1-T3.3 (12-14) all depend on T1.3 (6), T2.4 (10), T2.5 (11) — convergence point, then parallel among themselves.",
+    "wave5": "T4.1 (15), T4.2 (16) depend on all of wave4 (12,13,14) — sequential bottleneck before parallel pair.",
+    "wave6": "T5.1-T5.4 (17-20) all depend on T4.1 (15) and T4.2 (16) — parallel packaging/docs/coverage/smoke tasks."
+  }
+}

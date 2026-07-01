@@ -1,0 +1,354 @@
+{
+  "keycloak-mcp-server": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Scaffold project",
+        "description": "Scaffold project: pyproject.toml (Python 3.11+), package src/keycloak_mcp/, tests/, deps (fastmcp, httpx, jsonschema, pydantic-settings, pytest, pytest-asyncio, respx).",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Where: pyproject.toml, src/keycloak_mcp/, tests/. Done when: uv sync / pip install -e . succeeds, pytest runs (0 tests, no errors).",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 1,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 2,
+        "title": "Vendor Keycloak OpenAPI spec",
+        "description": "Vendor spec/keycloak-openapi.json \u2014 fetch official spec once, commit.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [],
+        "details": "Where: spec/keycloak-openapi.json. Done when: file exists, valid JSON, openapi field present.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 1,
+          "onCriticalPath": false
+        }
+      },
+      {
+        "id": 3,
+        "title": "Spec sync script",
+        "description": "scripts/sync_openapi.py \u2014 fetch URL, overwrite vendored spec (FR-9).",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [],
+        "details": "Where: scripts/sync_openapi.py. Done when: python scripts/sync_openapi.py --dry-run diffs without writing; real run updates file.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 1,
+          "onCriticalPath": false
+        }
+      },
+      {
+        "id": 4,
+        "title": "Settings config",
+        "description": "config.py: Settings (pydantic-settings) \u2014 KEYCLOAK_BASE_URL, AUTH_METHOD, conditional fields per FR-4/Specs \u00a75. Validate conditional-required fields at load (FR-4).",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "details": "Where: src/keycloak_mcp/config.py. Gate: pytest tests/test_config.py",
+        "testStrategy": "Missing CLIENT_SECRET under client_credentials raises; valid password-mode config loads.",
+        "subtasks": [],
+        "metadata": {
+          "wave": 2,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 5,
+        "title": "OpenAPI models",
+        "description": "openapi/models.py: Operation, Param, dataclasses per Design \u00a71.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "details": "Where: src/keycloak_mcp/openapi/models.py. Done when: importable, no logic yet.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 2,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 6,
+        "title": "OpenAPI parser",
+        "description": "openapi/parser.py: parse spec -> list[Operation] (FR-1). Implement IR-3 synthesized operationId + warning log.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "details": "Where: src/keycloak_mcp/openapi/parser.py. Gate: pytest tests/test_parser.py",
+        "testStrategy": "Fixture spec with named + unnamed operationId; malformed operation doesn't crash parse.",
+        "subtasks": [],
+        "metadata": {
+          "wave": 3,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 7,
+        "title": "AuthManager protocol",
+        "description": "auth/manager.py \u2014 AuthManager Protocol.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "details": "Where: src/keycloak_mcp/auth/manager.py.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 3,
+          "onCriticalPath": false
+        }
+      },
+      {
+        "id": 8,
+        "title": "Client credentials auth",
+        "description": "auth/client_credentials.py \u2014 client_credentials grant token fetch.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "details": "Where: src/keycloak_mcp/auth/client_credentials.py. Gate: pytest tests/test_auth.py",
+        "testStrategy": "Mocked token endpoint (respx) -> token returned; no refresh logic present (assert absence).",
+        "subtasks": [],
+        "metadata": {
+          "wave": 3,
+          "onCriticalPath": false
+        }
+      },
+      {
+        "id": 9,
+        "title": "Password (ROPC) auth",
+        "description": "auth/password.py \u2014 ROPC grant token fetch.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "details": "Where: src/keycloak_mcp/auth/password.py. Gate: pytest tests/test_auth.py",
+        "testStrategy": "Mocked token endpoint -> token returned.",
+        "subtasks": [],
+        "metadata": {
+          "wave": 3,
+          "onCriticalPath": false
+        }
+      },
+      {
+        "id": 10,
+        "title": "HTTP client wrapper",
+        "description": "http/client.py \u2014 async httpx wrapper, builds request from Operation + resolved params, no retry (IR-2).",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "details": "Where: src/keycloak_mcp/http/client.py.",
+        "testStrategy": "Network exception propagates unmodified (no retry attempted \u2014 assert call count == 1).",
+        "subtasks": [],
+        "metadata": {
+          "wave": 3,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 11,
+        "title": "KeycloakApiError",
+        "description": "errors.py \u2014 KeycloakApiError(status, body), raised on non-2xx, no per-status branching (FR-7/IR-5).",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "details": "Where: src/keycloak_mcp/errors.py. Gate: pytest tests/test_errors.py",
+        "testStrategy": "403 and 500 both produce raw passthrough, no message rewriting.",
+        "subtasks": [],
+        "metadata": {
+          "wave": 3,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 12,
+        "title": "Input validator",
+        "description": "validation/validator.py \u2014 jsonschema validation of tool input against operation schema (FR-6).",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          6,
+          10,
+          11
+        ],
+        "details": "Where: src/keycloak_mcp/validation/validator.py.",
+        "testStrategy": "Invalid input rejected pre-request (assert HTTP client never called).",
+        "subtasks": [],
+        "metadata": {
+          "wave": 4,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 13,
+        "title": "Tool generator",
+        "description": "tools/generator.py \u2014 build one FastMCP tool per Operation: name, input schema, handler (validate -> auth -> http -> error-wrap). Try/except isolation per operation (Design \u00a73).",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          6,
+          10,
+          11
+        ],
+        "details": "Where: src/keycloak_mcp/tools/generator.py. Gate: pytest tests/test_generator.py",
+        "testStrategy": "Fixture spec (5-10 ops incl. one malformed) -> correct tool count generated, malformed op skipped+logged, generation_report accurate.",
+        "subtasks": [],
+        "metadata": {
+          "wave": 4,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 14,
+        "title": "Realm param handling",
+        "description": "Realm param handling \u2014 realm required/optional derived from operation path/params (FR-5), DEFAULT_REALM fallback when optional and omitted.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          6,
+          10,
+          11
+        ],
+        "details": "Where: src/keycloak_mcp/tools/generator.py / validation.",
+        "testStrategy": "Operation with required realm rejects missing realm; optional realm falls back to DEFAULT_REALM.",
+        "subtasks": [],
+        "metadata": {
+          "wave": 4,
+          "onCriticalPath": false
+        }
+      },
+      {
+        "id": 15,
+        "title": "FastMCP server bootstrap",
+        "description": "server.py \u2014 FastMCP app: load settings, parse spec once, generate+register tools, start stdio transport.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          12,
+          13,
+          14
+        ],
+        "details": "Where: src/keycloak_mcp/server.py.",
+        "testStrategy": "Startup with fixture spec registers expected tool count; startup time assertion against NFR-1 (<2s) using real vendored spec.",
+        "subtasks": [],
+        "metadata": {
+          "wave": 5,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 16,
+        "title": "Structured JSON logging",
+        "description": "Structured JSON logging (FR-8) \u2014 method/path/status only, explicit test that body/token never appear in log output.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          12,
+          13,
+          14
+        ],
+        "details": "Where: src/keycloak_mcp/ (logging setup).",
+        "testStrategy": "Log capture assert no PII/secret substrings present across a sample of calls.",
+        "subtasks": [],
+        "metadata": {
+          "wave": 5,
+          "onCriticalPath": false
+        }
+      },
+      {
+        "id": 17,
+        "title": "uvx entry point",
+        "description": "uvx entry point (IR-6) \u2014 [project.scripts] in pyproject.toml.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          15,
+          16
+        ],
+        "details": "Where: pyproject.toml. Done when: uvx --from . keycloak-mcp-server boots server.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 6,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 18,
+        "title": "README docs",
+        "description": "README: config vars, .env warning (IR-4 \u2014 never commit secrets), auth method setup, sync script usage.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [
+          15,
+          16
+        ],
+        "details": "Where: README.md.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 6,
+          "onCriticalPath": false
+        }
+      },
+      {
+        "id": 19,
+        "title": "Coverage check",
+        "description": "Full coverage check against NFR-2 (>80% generator + auth manager) \u2014 pytest --cov=keycloak_mcp.tools.generator --cov=keycloak_mcp.auth.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          15,
+          16
+        ],
+        "details": "Gate: pytest --cov=keycloak_mcp.tools.generator --cov=keycloak_mcp.auth",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 6,
+          "onCriticalPath": false
+        }
+      },
+      {
+        "id": 20,
+        "title": "End-to-end smoke test",
+        "description": "End-to-end smoke: run server against a local/dev Keycloak instance (if available), invoke 2-3 real tools (list realms, create/delete test user), confirm error passthrough on a deliberate 403.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [
+          15,
+          16
+        ],
+        "details": "Manual smoke test against real/dev Keycloak.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 6,
+          "onCriticalPath": false
+        }
+      }
+    ]
+  }
+}

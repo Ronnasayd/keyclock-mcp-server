@@ -1,0 +1,14 @@
+.claude/skills/*
+.claude/commands/*
+.claude/instructions/*
+.claude/agents/*
+.claude/hooks/*
+.claude/context-refs.json
+.claude/skills/skills.db
+.rulesignore
+.skillsignore
+.agentsignore
+.agents/skills/*
+skills-lock.json
+.sessions/*
+.mcp.json
