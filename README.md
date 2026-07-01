@@ -8,6 +8,8 @@ one tool per operation, name/input schema derived automatically.
 
 ```bash
 uvx --from . keycloak-mcp-server
+# or
+uvx --from git+https://github.com/Ronnasayd/keyclock-mcp-server keycloak-mcp-server
 ```
 
 ## Configuration
@@ -15,7 +17,7 @@ uvx --from . keycloak-mcp-server
 Set via environment variables (or a `.env` file — **never commit it**, see `.gitignore`):
 
 | Var                 | Required    | Notes                              |
-| ------------------- | ----------- | ----------------------------------- |
+| ------------------- | ----------- | ---------------------------------- |
 | `KEYCLOAK_BASE_URL` | yes         | Admin API base URL                 |
 | `AUTH_METHOD`       | yes         | `client_credentials` \| `password` |
 | `CLIENT_ID`         | conditional | both auth methods                  |

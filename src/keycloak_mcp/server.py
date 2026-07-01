@@ -15,9 +15,7 @@ from keycloak_mcp.openapi.models import Operation
 from keycloak_mcp.openapi.parser import parse_spec
 from keycloak_mcp.tools.generator import GenerationReport, generate_tools
 
-VENDORED_SPEC_PATH = (
-    Path(__file__).resolve().parent.parent.parent / "spec" / "keycloak-openapi.json"
-)
+VENDORED_SPEC_PATH = Path(__file__).resolve().parent / "spec" / "keycloak-openapi.json"
 
 
 def load_operations(spec_path: Path = VENDORED_SPEC_PATH) -> list[Operation]:
