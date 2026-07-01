@@ -1,0 +1,42 @@
+{
+  "openapi": "3.0.3",
+  "paths": {
+    "/admin/realms": {
+      "get": {
+        "operationId": "getRealms",
+        "parameters": [
+          {
+            "name": "briefRepresentation",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "boolean" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      },
+      "post": {
+        "parameters": [
+          {
+            "name": "realm",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": { "201": { "description": "Created" } }
+      }
+    },
+    "/admin/realms/{realm}/broken": {
+      "get": {
+        "parameters": "not-a-list",
+        "responses": { "200": { "description": "OK" } }
+      }
+    }
+  }
+}

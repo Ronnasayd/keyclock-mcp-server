@@ -1,0 +1,32 @@
+"""Parsed OpenAPI operation representations (Design §1)."""
+
+from dataclasses import dataclass, field
+from typing import Any, Literal
+
+ParamLocation = Literal["path", "query", "header"]
+
+
+@dataclass
+class Param:
+    name: str
+    location: ParamLocation
+    required: bool
+    schema: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class RequestBodySchema:
+    required: bool
+    content_type: str
+    schema: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class Operation:
+    operation_id: str
+    method: str
+    path: str
+    params: list[Param] = field(default_factory=list)
+    request_body: RequestBodySchema | None = None
+    response_schema: dict[str, Any] = field(default_factory=dict)
+    operation_id_synthesized: bool = False

@@ -1,0 +1,59 @@
+# ========================
+# RUFF CONFIG
+# Equivalent to eslint.config.mjs
+# ========================
+
+target-version = "py312"
+line-length = 88
+
+[lint]
+select = [
+  "E",     # pycodestyle errors
+  "W",     # pycodestyle warnings
+  "F",     # pyflakes — unused imports, undefined names
+  "I",     # isort — import order (equiv import/order)
+  "C901",  # mccabe complexity (equiv complexity max 15)
+  "D",     # pydocstyle — docstrings (equiv jsdoc/require-*)
+  "T20",   # no print() (equiv no-console warn/error only)
+  "T10",   # no debugger (equiv no-debugger)
+  "TCH",   # type-checking imports (equiv consistent-type-imports)
+  "RUF",   # ruff-specific — RUF006 = unawaited async (equiv no-floating-promises)
+  "ANN",   # annotations (equiv no-explicit-any)
+  "ARG",   # unused arguments (equiv no-unused-vars argsIgnorePattern: ^_)
+  "UP",    # pyupgrade
+  "B",     # bugbear — common bug patterns
+  "S",     # bandit — security checks
+  "SIM",   # simplify
+  "C4",    # comprehension simplification
+  "PERF",  # performance anti-patterns
+  "ERA",   # eradicated — no commented-out code
+  "N",     # pep8 naming
+]
+ignore = [
+  "D203",   # conflicts with D211
+  "D213",   # conflicts with D212
+  "ANN101", # self needs no annotation (deprecated)
+  "ANN102", # cls needs no annotation (deprecated)
+]
+
+# no equiv for: import/no-cycle, max-depth, max-lines-per-function
+
+# equiv: no-restricted-imports (relative parent imports)
+# enforced via B010 + manual convention
+
+[lint.mccabe]
+max-complexity = 15  # equiv: complexity: ["error", { max: 15 }]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.isort]
+known-first-party = ["src"]
+force-sort-within-sections = true
+# equiv: groups builtin > external > internal, alphabetize asc
+
+[lint.per-file-ignores]
+# equiv: TESTS OVERRIDE — mirrors eslint test file relaxations
+"**/test_*.py" = ["D", "ANN", "T20", "T10", "S", "SIM", "ARG", "ERA", "PERF"]
+"**/*_test.py" = ["D", "ANN", "T20", "T10", "S", "SIM", "ARG", "ERA", "PERF"]
+"**/conftest.py" = ["D", "ANN", "ARG"]
