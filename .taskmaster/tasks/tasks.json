@@ -586,7 +586,7 @@
         "status": "done",
         "priority": "high",
         "dependencies": [],
-        "details": "Where: src/keycloak_mcp/config.py. Reuses existing SettingsConfigDict(env_prefix=\"MCP_KEYCLOCK_\") - no custom parsing needed. Done when: Settings(read_only=True) and env MCP_KEYCLOCK_READ_ONLY=true both yield True. Gate: type-check passes.",
+        "details": "Where: src/keycloak_mcp/config.py. Reuses existing SettingsConfigDict(env_prefix=\"MCP_KEYCLOAK_\") - no custom parsing needed. Done when: Settings(read_only=True) and env MCP_KEYCLOAK_READ_ONLY=true both yield True. Gate: type-check passes.",
         "testStrategy": "none",
         "subtasks": [],
         "metadata": {
@@ -664,8 +664,8 @@
       },
       {
         "id": 6,
-        "title": "Document MCP_KEYCLOCK_READ_ONLY in README",
-        "description": "Add row to env var table in README.md for MCP_KEYCLOCK_READ_ONLY - optional, default false, boolean, restricts server to GET-only operations",
+        "title": "Document MCP_KEYCLOAK_READ_ONLY in README",
+        "description": "Add row to env var table in README.md for MCP_KEYCLOAK_READ_ONLY - optional, default false, boolean, restricts server to GET-only operations",
         "status": "done",
         "priority": "medium",
         "dependencies": [

@@ -1,4 +1,4 @@
-# MCP_KEYCLOCK_READ_ONLY Design
+# MCP_KEYCLOAK_READ_ONLY Design
 
 **Spec**: `.specs/features/mcp-keycloak-read-only/Specs.md`
 **Status**: Draft
@@ -38,7 +38,7 @@ graph TD
 
 | System                        | Integration Method                                                     |
 | ----------------------------- | ---------------------------------------------------------------------- |
-| pydantic-settings env parsing | New field uses existing `env_prefix="MCP_KEYCLOCK_"` — no extra config |
+| pydantic-settings env parsing | New field uses existing `env_prefix="MCP_KEYCLOAK_"` — no extra config |
 | FastMCP tool registration     | Unaffected; still receives whatever list `generate_tools` returns      |
 
 ---
@@ -49,7 +49,7 @@ graph TD
 
 - **Purpose**: Global switch restricting the server to GET-only tools.
 - **Location**: `src/keycloak_mcp/config.py`
-- **Interfaces**: `read_only: bool = False` (auto-bound to `MCP_KEYCLOCK_READ_ONLY`)
+- **Interfaces**: `read_only: bool = False` (auto-bound to `MCP_KEYCLOAK_READ_ONLY`)
 - **Dependencies**: pydantic-settings boolean coercion (built-in)
 
 ### `generate_tools(..., read_only: bool = False)`

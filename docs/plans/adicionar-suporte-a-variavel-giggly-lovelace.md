@@ -1,8 +1,8 @@
-# Add MCP_KEYCLOCK_READ_ONLY support
+# Add MCP_KEYCLOAK_READ_ONLY support
 
 ## Context
 
-User wants a `MCP_KEYCLOCK_READ_ONLY` env var. When set (true), only GET
+User wants a `MCP_KEYCLOAK_READ_ONLY` env var. When set (true), only GET
 (read-only) Keycloak operations should be exposed as MCP tools; non-GET
 (POST/PUT/DELETE — writes) operations must be blocked.
 
@@ -16,7 +16,7 @@ than exposing it and rejecting at call time.
 
 **`src/keycloak_mcp/config.py`**
 
-- Add field: `read_only: bool = False` (auto env `MCP_KEYCLOCK_READ_ONLY`,
+- Add field: `read_only: bool = False` (auto env `MCP_KEYCLOAK_READ_ONLY`,
   pydantic-settings parses `"true"/"1"/"false"/"0"` natively — no custom
   parsing needed).
 
@@ -40,11 +40,11 @@ than exposing it and rejecting at call time.
   `read_only=True` over a mix of GET/POST operations, assert only GET tool
   names appear in the returned tools list and non-GET ones land in
   `report.blocked`.
-- Manually: set `MCP_KEYCLOCK_READ_ONLY=true`, run server, list tools via
+- Manually: set `MCP_KEYCLOAK_READ_ONLY=true`, run server, list tools via
   MCP client, confirm only read (`get_*`) tools are present.
 
 ### Docs
 
 - Update `README.md` env var table (lines ~21-27) adding
-  `MCP_KEYCLOCK_READ_ONLY` row (optional, default `false`, boolean — restricts
+  `MCP_KEYCLOAK_READ_ONLY` row (optional, default `false`, boolean — restricts
   server to GET-only operations).

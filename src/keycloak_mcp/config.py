@@ -7,13 +7,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Server configuration loaded from `MCP_KEYCLOCK_*` environment variables."""
+    """Server configuration loaded from `MCP_KEYCLOAK_*` environment variables."""
 
     model_config = SettingsConfigDict(
-        env_prefix="MCP_KEYCLOCK_", extra="ignore", populate_by_name=True
+        env_prefix="MCP_KEYCLOAK_", extra="ignore", populate_by_name=True
     )
 
-    keycloak_base_url: str = Field(validation_alias="MCP_KEYCLOCK_BASE_URL")
+    keycloak_base_url: str = Field(validation_alias="MCP_KEYCLOAK_BASE_URL")
     auth_method: Literal["client_credentials", "password"]
     client_id: str | None = None
     client_secret: str | None = None

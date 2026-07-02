@@ -3,19 +3,36 @@
   "version": "1.0.0",
   "createdAt": "2026-07-02T00:00:00Z",
   "updatedAt": "2026-07-02T00:00:00Z",
-  "description": "Add MCP_KEYCLOCK_READ_ONLY env var to filter non-GET Keycloak operations out of generated MCP tools",
+  "description": "Add MCP_KEYCLOAK_READ_ONLY env var to filter non-GET Keycloak operations out of generated MCP tools",
   "source": ".specs/features/mcp-keycloak-read-only/Tasks.md",
   "testCommands": {
     "unit": "pytest"
   },
   "executionWaves": {
-    "wave1_serial": [1],
-    "wave2_serial": [2],
-    "wave3_serial": [3],
-    "wave4_serial": [4],
-    "wave5_parallel": [5, 6]
+    "wave1_serial": [
+      1
+    ],
+    "wave2_serial": [
+      2
+    ],
+    "wave3_serial": [
+      3
+    ],
+    "wave4_serial": [
+      4
+    ],
+    "wave5_parallel": [
+      5,
+      6
+    ]
   },
-  "criticalPath": [1, 2, 3, 4, 5],
+  "criticalPath": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
   "parallelizationNotes": {
     "wave1-wave4": "Strictly sequential - each builds directly on the prior file change (config -> report shape -> filtering logic -> wiring)",
     "wave5": "T5 (unit test) and T6 (README doc) both depend only on T4 and touch disjoint files - safe to run in parallel"

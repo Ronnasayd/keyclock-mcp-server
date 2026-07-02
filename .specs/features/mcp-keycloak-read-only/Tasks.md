@@ -1,4 +1,4 @@
-# MCP_KEYCLOCK_READ_ONLY Tasks
+# MCP_KEYCLOAK_READ_ONLY Tasks
 
 **Design**: `.specs/features/mcp-keycloak-read-only/Design.md`
 **Status**: Draft
@@ -45,8 +45,8 @@ T4 → T5 → T6
 - **What**: Add `read_only: bool = False` to `Settings` in `src/keycloak_mcp/config.py`.
 - **Where**: `src/keycloak_mcp/config.py`
 - **Depends on**: -
-- **Reuses**: existing `SettingsConfigDict(env_prefix="MCP_KEYCLOCK_")` — no custom parsing needed.
-- **Done when**: `Settings(read_only=True)` and env `MCP_KEYCLOCK_READ_ONLY=true` both yield `True`.
+- **Reuses**: existing `SettingsConfigDict(env_prefix="MCP_KEYCLOAK_")` — no custom parsing needed.
+- **Done when**: `Settings(read_only=True)` and env `MCP_KEYCLOAK_READ_ONLY=true` both yield `True`.
 - **Tests**: none (trivial pydantic field; covered indirectly by T5).
 - **Gate**: `uv run mypy src/keycloak_mcp/config.py` (or project's type-check command) passes.
 
@@ -90,9 +90,9 @@ T4 → T5 → T6
 - **Tests**: this task IS the test.
 - **Gate**: `pytest` full run passes.
 
-### T6: Document `MCP_KEYCLOCK_READ_ONLY` in README
+### T6: Document `MCP_KEYCLOAK_READ_ONLY` in README
 
-- **What**: Add a row to the env var table (README.md, near lines 15-27) for `MCP_KEYCLOCK_READ_ONLY` — optional, default `false`, boolean, restricts server to GET-only operations.
+- **What**: Add a row to the env var table (README.md, near lines 15-27) for `MCP_KEYCLOAK_READ_ONLY` — optional, default `false`, boolean, restricts server to GET-only operations.
 - **Where**: `README.md`
 - **Depends on**: T4
 - **Reuses**: existing table format.
