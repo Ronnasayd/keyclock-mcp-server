@@ -7,6 +7,7 @@ from keycloak_mcp.config import Settings
 from keycloak_mcp.http.client import HttpClient
 from keycloak_mcp.openapi.models import Operation, Param, RequestBodySchema
 from keycloak_mcp.tools.generator import generate_tools
+from keycloak_mcp.validation.validator import InputValidationError
 
 BASE_URL = "https://kc.example.com"
 
@@ -183,7 +184,7 @@ async def test_invalid_input_never_reaches_http_client():
     tools, _ = generate_tools(make_operations(), auth_manager, http_client)
     tool = next(t for t in tools if t.name == "getThing0")
 
-    with pytest.raises(Exception):
+    with pytest.raises(InputValidationError):
         await tool.run({})
 
     assert route.call_count == 0

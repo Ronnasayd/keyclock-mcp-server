@@ -1,15 +1,15 @@
 """Build one FastMCP tool per Operation via metaprogramming (FR-2, Design §3)."""
 
+from dataclasses import dataclass, field
 import json
 import logging
-from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 from fastmcp.tools.tool import Tool, ToolResult
 from mcp.types import TextContent
 
 from keycloak_mcp.auth.manager import AuthManager
-from keycloak_mcp.errors import KeycloakApiError
+from keycloak_mcp.errors import JsonValue, KeycloakApiError
 from keycloak_mcp.http.client import HttpClient
 from keycloak_mcp.openapi.models import Operation
 from keycloak_mcp.openapi.realm import resolve_realm
@@ -18,19 +18,23 @@ from keycloak_mcp.validation.validator import build_input_schema, validate_input
 logger = logging.getLogger(__name__)
 
 
-def _to_text_content(value: Any) -> TextContent:
+def _to_text_content(value: JsonValue) -> TextContent:
     return TextContent(type="text", text=json.dumps(value))
 
 
 @dataclass
 class GenerationReport:
+    """Tally of tool generation outcomes: succeeded, failed, or blocked."""
+
     succeeded: list[str] = field(default_factory=list)
     failed: list[str] = field(default_factory=list)
     blocked: list[str] = field(default_factory=list)
 
 
 class GeneratedTool(Tool):
-    model_config = {"arbitrary_types_allowed": True}
+    """An MCP tool backed by a single OpenAPI operation."""
+
+    model_config: ClassVar[dict[str, bool]] = {"arbitrary_types_allowed": True}
 
     operation: Operation
     auth_manager: AuthManager
@@ -38,6 +42,7 @@ class GeneratedTool(Tool):
     default_realm: str | None
 
     async def run(self, arguments: dict[str, Any]) -> ToolResult:
+        """Resolve realm, validate input, call Keycloak, and wrap the result."""
         args = resolve_realm(self.operation, arguments, self.default_realm)
         validate_input(self.operation, args)
 
@@ -80,6 +85,7 @@ def generate_tools(
     default_realm: str | None = None,
     read_only: bool = False,
 ) -> tuple[list[GeneratedTool], GenerationReport]:
+    """Build one `GeneratedTool` per operation, skipping malformed/blocked ones."""
     tools: list[GeneratedTool] = []
     report = GenerationReport()
 

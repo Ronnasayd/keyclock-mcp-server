@@ -19,6 +19,7 @@ def _resolve_schema(raw_schema: dict[str, Any], spec: dict[str, Any]) -> dict[st
 
 
 def parse_spec(spec: dict[str, Any]) -> list[Operation]:
+    """Parse every HTTP operation in `spec` into a list of `Operation`."""
     operations: list[Operation] = []
     for path, path_item in spec.get("paths", {}).items():
         path_level_params = path_item.get("parameters", [])
@@ -40,14 +41,14 @@ def _merge_params(
         (p["name"], p["in"]): p for p in path_level_params
     }
     for p in operation_params:
-        merged[(p["name"], p["in"])] = p
+        merged[p["name"], p["in"]] = p
     return list(merged.values())
 
 
 def _parse_operation(
     path: str,
     method: str,
-    raw_operation: Any,
+    raw_operation: dict[str, Any],
     spec: dict[str, Any],
     path_level_params: list[dict[str, Any]],
 ) -> Operation | None:
@@ -82,7 +83,9 @@ def _resolve_operation_id(path: str, method: str, raw_operation: dict[str, Any])
     return synthesized
 
 
-def _parse_params(raw_params: Any, spec: dict[str, Any]) -> list[Param]:
+def _parse_params(
+    raw_params: list[dict[str, Any]], spec: dict[str, Any]
+) -> list[Param]:
     return [
         Param(
             name=raw_param["name"],

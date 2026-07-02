@@ -8,6 +8,8 @@ ParamLocation = Literal["path", "query", "header"]
 
 @dataclass
 class Param:
+    """A path, query, or header parameter for an operation."""
+
     name: str
     location: ParamLocation
     required: bool
@@ -17,6 +19,8 @@ class Param:
 
 @dataclass
 class RequestBodySchema:
+    """The request body schema for an operation."""
+
     required: bool
     content_type: str
     schema: dict[str, Any] = field(default_factory=dict)
@@ -24,6 +28,8 @@ class RequestBodySchema:
 
 @dataclass
 class Operation:
+    """A single parsed OpenAPI operation, ready to become an MCP tool."""
+
     operation_id: str
     method: str
     path: str

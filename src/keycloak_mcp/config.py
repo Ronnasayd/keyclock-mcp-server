@@ -7,6 +7,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    """Server configuration loaded from `MCP_KEYCLOCK_*` environment variables."""
+
     model_config = SettingsConfigDict(
         env_prefix="MCP_KEYCLOCK_", extra="ignore", populate_by_name=True
     )
@@ -22,6 +24,7 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_auth_fields(self) -> "Settings":
+        """Ensure the fields required by `auth_method` are present."""
         if self.auth_method == "client_credentials":
             self._require_fields(
                 client_id=self.client_id, client_secret=self.client_secret
@@ -38,5 +41,6 @@ class Settings(BaseSettings):
         missing = [name for name, value in fields.items() if not value]
         if missing:
             raise ValueError(
-                f"auth_method={self.auth_method!r} requires fields: {', '.join(missing)}"
+                f"auth_method={self.auth_method!r} requires fields: "
+                f"{', '.join(missing)}"
             )

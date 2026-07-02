@@ -1,8 +1,8 @@
 import time
 
 from keycloak_mcp.config import Settings
-from keycloak_mcp.server import VENDORED_SPEC_PATH, build_server, load_operations
 from keycloak_mcp.openapi.models import Operation, Param
+from keycloak_mcp.server import VENDORED_SPEC_PATH, build_server, load_operations
 
 
 def make_settings() -> Settings:
@@ -31,11 +31,11 @@ def test_startup_registers_expected_tool_count():
         )
         for i in range(5)
     ]
-    mcp, report = build_server(make_settings(), operations=operations)
+    _mcp, report = build_server(make_settings(), operations=operations)
     assert len(report.succeeded) == 5
 
 
-async def test_startup_time_under_2s_with_real_spec():
+def test_startup_time_under_2s_with_real_spec():
     operations = load_operations(VENDORED_SPEC_PATH)
     start = time.monotonic()
     build_server(make_settings(), operations=operations)

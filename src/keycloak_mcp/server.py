@@ -3,8 +3,8 @@
 import json
 from pathlib import Path
 
-import httpx
 from fastmcp import FastMCP
+import httpx
 
 from keycloak_mcp.auth.client_credentials import ClientCredentialsAuthManager
 from keycloak_mcp.auth.manager import AuthManager
@@ -19,6 +19,7 @@ VENDORED_SPEC_PATH = Path(__file__).resolve().parent / "spec" / "keycloak-openap
 
 
 def load_operations(spec_path: Path = VENDORED_SPEC_PATH) -> list[Operation]:
+    """Parse the vendored OpenAPI spec at `spec_path` into a list of operations."""
     spec = json.loads(spec_path.read_text())
     return parse_spec(spec)
 
@@ -26,6 +27,7 @@ def load_operations(spec_path: Path = VENDORED_SPEC_PATH) -> list[Operation]:
 def build_auth_manager(
     settings: Settings, http_client: httpx.AsyncClient
 ) -> AuthManager:
+    """Build the auth manager matching `settings.auth_method`."""
     if settings.auth_method == "client_credentials":
         return ClientCredentialsAuthManager(settings, http_client)
     return PasswordAuthManager(settings, http_client)
@@ -34,6 +36,7 @@ def build_auth_manager(
 def build_server(
     settings: Settings, operations: list[Operation] | None = None
 ) -> tuple[FastMCP, GenerationReport]:
+    """Build a FastMCP app with tools generated from `operations`."""
     operations = operations if operations is not None else load_operations()
 
     auth_http_client = httpx.AsyncClient(base_url=settings.keycloak_base_url)
@@ -55,6 +58,7 @@ def build_server(
 
 
 def main() -> None:
+    """Run the MCP server over stdio."""
     settings = Settings()
     mcp, _ = build_server(settings)
     mcp.run(transport="stdio")

@@ -30,8 +30,7 @@ async def test_client_credentials_returns_token(http_client):
     assert token == "abc123"
 
 
-@respx.mock
-async def test_client_credentials_has_no_refresh_method(http_client):
+def test_client_credentials_has_no_refresh_method(http_client):
     settings = Settings(
         keycloak_base_url=BASE_URL,
         auth_method="client_credentials",

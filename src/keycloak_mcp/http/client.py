@@ -1,11 +1,10 @@
 """Thin async httpx wrapper for the Keycloak Admin REST API. No retry (IR-2)."""
 
 import logging
-from typing import Any
 
 import httpx
 
-from keycloak_mcp.errors import KeycloakApiError
+from keycloak_mcp.errors import JsonValue, KeycloakApiError
 from keycloak_mcp.logging_config import log_http_call
 from keycloak_mcp.openapi.models import Operation
 
@@ -13,17 +12,21 @@ logger = logging.getLogger(__name__)
 
 
 class HttpClient:
+    """Thin async wrapper that issues Keycloak Admin REST API requests."""
+
     def __init__(self, http_client: httpx.AsyncClient) -> None:
+        """Store the underlying httpx client used to issue requests."""
         self._http_client = http_client
 
     async def call(
         self,
         operation: Operation,
         token: str,
-        path_params: dict[str, Any] | None = None,
-        query_params: dict[str, Any] | None = None,
-        body: Any = None,
-    ) -> Any:
+        path_params: dict[str, str] | None = None,
+        query_params: dict[str, str | int | float | bool | None] | None = None,
+        body: JsonValue = None,
+    ) -> JsonValue:
+        """Call `operation` against Keycloak; raise `KeycloakApiError` on failure."""
         url = operation.path.format(**(path_params or {}))
         response = await self._http_client.request(
             operation.method,
@@ -38,7 +41,8 @@ class HttpClient:
         return _safe_body(response)
 
 
-def _safe_body(response: httpx.Response) -> Any:
+def _safe_body(response: httpx.Response) -> JsonValue:
+    """Parse the response body as JSON, falling back to raw text or None."""
     if not response.content:
         return None
     try:

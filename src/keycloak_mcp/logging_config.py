@@ -6,7 +6,10 @@ from typing import Any
 
 
 class JsonFormatter(logging.Formatter):
+    """Formats log records as single-line JSON objects."""
+
     def format(self, record: logging.LogRecord) -> str:
+        """Render `record` as a JSON string."""
         payload: dict[str, Any] = {
             "level": record.levelname,
             "message": record.getMessage(),
@@ -16,6 +19,7 @@ class JsonFormatter(logging.Formatter):
 
 
 def configure_logging(level: int = logging.INFO) -> None:
+    """Install a JSON stream handler on the root logger."""
     handler = logging.StreamHandler()
     handler.setFormatter(JsonFormatter())
     root = logging.getLogger()
@@ -26,6 +30,7 @@ def configure_logging(level: int = logging.INFO) -> None:
 def log_http_call(
     logger: logging.Logger, method: str, path: str, status_code: int
 ) -> None:
+    """Log a single HTTP call with method, path, and status code."""
     logger.info(
         "keycloak http call",
         extra={

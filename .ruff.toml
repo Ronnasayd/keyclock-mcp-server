@@ -32,8 +32,6 @@ select = [
 ignore = [
   "D203",   # conflicts with D211
   "D213",   # conflicts with D212
-  "ANN101", # self needs no annotation (deprecated)
-  "ANN102", # cls needs no annotation (deprecated)
 ]
 
 # no equiv for: import/no-cycle, max-depth, max-lines-per-function

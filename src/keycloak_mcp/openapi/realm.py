@@ -1,4 +1,4 @@
-"""Realm param resolution (FR-5): required/optional per operation, DEFAULT_REALM fallback."""
+"""Realm param resolution (FR-5): required/optional per op, DEFAULT_REALM fallback."""
 
 from typing import Any
 
@@ -10,6 +10,7 @@ REALM_PARAM_NAME = "realm"
 def resolve_realm(
     operation: Operation, args: dict[str, Any], default_realm: str | None
 ) -> dict[str, Any]:
+    """Fill in `default_realm` for the optional, unset realm param of `operation`."""
     realm_param = next(
         (param for param in operation.params if param.name == REALM_PARAM_NAME), None
     )

@@ -8,12 +8,16 @@ from keycloak_mcp.openapi.models import Operation
 
 
 class InputValidationError(Exception):
+    """Raised when tool arguments fail JSON schema validation."""
+
     def __init__(self, errors: list[str]) -> None:
+        """Store the list of human-readable validation error messages."""
         self.errors = errors
         super().__init__("; ".join(errors))
 
 
 def build_input_schema(operation: Operation) -> dict[str, Any]:
+    """Build a JSON schema for `operation`'s params and request body."""
     properties: dict[str, Any] = {}
     required: list[str] = []
 
@@ -34,6 +38,7 @@ def build_input_schema(operation: Operation) -> dict[str, Any]:
 
 
 def validate_input(operation: Operation, args: dict[str, Any]) -> None:
+    """Validate `args` against `operation`'s input schema, raising on failure."""
     schema = build_input_schema(operation)
     validator = jsonschema.Draft7Validator(schema)
     errors = [error.message for error in validator.iter_errors(args)]
