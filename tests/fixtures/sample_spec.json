@@ -41,6 +41,34 @@
         "responses": { "200": { "description": "OK" } }
       }
     },
+    "/admin/realms/{realm}/level-test": {
+      "parameters": [
+        {
+          "name": "realm",
+          "in": "path",
+          "required": true,
+          "description": "path-level realm",
+          "schema": { "type": "string" }
+        }
+      ],
+      "get": {
+        "operationId": "levelTestGet",
+        "responses": { "200": { "description": "OK" } }
+      },
+      "delete": {
+        "operationId": "levelTestDelete",
+        "parameters": [
+          {
+            "name": "realm",
+            "in": "path",
+            "required": false,
+            "description": "operation-level override",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "204": { "description": "No Content" } }
+      }
+    },
     "/admin/realms/{realm}": {
       "put": {
         "operationId": "updateRealm",

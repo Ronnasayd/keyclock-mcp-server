@@ -489,5 +489,92 @@
         }
       }
     ]
+  },
+  "openapi-path-level-params": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Extract path-item-level parameters in parse_spec",
+        "description": "openapi/parser.py::parse_spec: extract path_item.get(\"parameters\", []) per path, path_item pair, pass as new path_level_params arg into _parse_operation (FR-1).",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Where: src/keycloak_mcp/openapi/parser.py::parse_spec. Done when: path_level_params extracted once per path and threaded into every _parse_operation call for that path.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 1,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 2,
+        "title": "Merge path-level and operation-level params in _parse_operation",
+        "description": "openapi/parser.py::_parse_operation: accept path_level_params: list[dict]; merge with raw_operation.get(\"parameters\", []) keyed by (name, in), operation-level wins on collision; pass merged list to _parse_params (FR-2).",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "details": "Where: src/keycloak_mcp/openapi/parser.py::_parse_operation. Done when: merged param list passed to _parse_params. Gate: pytest tests/test_parser.py",
+        "testStrategy": "Path item with shared parameters + get with no operation-level params -> merged Operation.params contains shared param, required=True; path item with shared param + operation declaring same (name, in) differently -> operation-level wins; path item with no shared parameters -> behavior unchanged (NFR-3).",
+        "subtasks": [],
+        "metadata": {
+          "wave": 2,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 3,
+        "title": "Full test suite regression check",
+        "description": "Run full pytest suite, confirm no regressions (NFR-1).",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          2
+        ],
+        "details": "Where: repo root. Done when: pytest exits 0.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 3,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 4,
+        "title": "Parse real spec and assert realm param present",
+        "description": "Parse real spec, assert get_admin_realms_realm operation (from spec/keycloak-openapi.json) now has realm in Operation.params, required=True.",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "details": "Where: spec/keycloak-openapi.json via parse_spec. Done when: assertion passes.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 4,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 5,
+        "title": "Manual MCP tool invocation check",
+        "description": "Invoke mcp__keycloak__get_admin_realms_realm with {\"realm\": \"lingopass\"} -> returns realm data; omit realm -> clean InputValidationError, not bare KeyError.",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "details": "Where: manual MCP tool call. Done when: both cases confirmed.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 5,
+          "onCriticalPath": true
+        }
+      }
+    ]
   }
 }

@@ -47,7 +47,7 @@ def test_malformed_operation_does_not_crash_parse(caplog):
 
 def test_total_valid_operations_extracted():
     operations = parse_spec(load_fixture())
-    assert len(operations) == 3
+    assert len(operations) == 5
 
 
 def test_request_body_ref_is_resolved_inline():
@@ -89,6 +89,24 @@ def test_param_description_defaults_to_none():
     )
     param = next(p for p in post_realms.params if p.name == "realm")
     assert param.description is None
+
+
+def test_path_level_param_merged_when_operation_declares_none():
+    operations = parse_spec(load_fixture())
+    get_op = next(op for op in operations if op.operation_id == "levelTestGet")
+    param = next(p for p in get_op.params if p.name == "realm")
+    assert param.location == "path"
+    assert param.required is True
+    assert param.description == "path-level realm"
+
+
+def test_operation_level_param_overrides_path_level_on_collision():
+    operations = parse_spec(load_fixture())
+    delete_op = next(op for op in operations if op.operation_id == "levelTestDelete")
+    params = [p for p in delete_op.params if p.name == "realm"]
+    assert len(params) == 1
+    assert params[0].required is False
+    assert params[0].description == "operation-level override"
 
 
 def test_request_body_ref_cycle_does_not_recurse_infinitely():

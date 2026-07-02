@@ -21,26 +21,47 @@ def _resolve_schema(raw_schema: dict[str, Any], spec: dict[str, Any]) -> dict[st
 def parse_spec(spec: dict[str, Any]) -> list[Operation]:
     operations: list[Operation] = []
     for path, path_item in spec.get("paths", {}).items():
+        path_level_params = path_item.get("parameters", [])
         for method, raw_operation in path_item.items():
             if method not in HTTP_METHODS:
                 continue
-            operation = _parse_operation(path, method, raw_operation, spec)
+            operation = _parse_operation(
+                path, method, raw_operation, spec, path_level_params
+            )
             if operation is not None:
                 operations.append(operation)
     return operations
 
 
+def _merge_params(
+    path_level_params: list[dict[str, Any]], operation_params: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    merged: dict[tuple[Any, Any], dict[str, Any]] = {
+        (p["name"], p["in"]): p for p in path_level_params
+    }
+    for p in operation_params:
+        merged[(p["name"], p["in"])] = p
+    return list(merged.values())
+
+
 def _parse_operation(
-    path: str, method: str, raw_operation: Any, spec: dict[str, Any]
+    path: str,
+    method: str,
+    raw_operation: Any,
+    spec: dict[str, Any],
+    path_level_params: list[dict[str, Any]],
 ) -> Operation | None:
     try:
+        merged_params = _merge_params(
+            path_level_params, raw_operation.get("parameters", [])
+        )
         return Operation(
             operation_id=_resolve_operation_id(path, method, raw_operation),
             operation_id_synthesized="operationId" not in raw_operation
             or not raw_operation["operationId"],
             method=method,
             path=path,
-            params=_parse_params(raw_operation.get("parameters", []), spec),
+            params=_parse_params(merged_params, spec),
             request_body=_parse_request_body(raw_operation.get("requestBody"), spec),
             response_schema=raw_operation.get("responses", {}),
             summary=raw_operation.get("summary"),

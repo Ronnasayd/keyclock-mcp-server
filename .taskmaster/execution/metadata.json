@@ -1,44 +1,27 @@
 {
-  "projectName": "openapi-tool-descriptions",
+  "projectName": "openapi-path-level-params",
   "version": "1.0.0",
   "createdAt": "2026-07-02T00:00:00Z",
   "updatedAt": "2026-07-02T00:00:00Z",
-  "description": "Propagate OpenAPI summary/description into MCP tool descriptions and param schemas.",
-  "source": ".specs/features/openapi-tool-descriptions/Tasks.md",
+  "description": "Fix path-level OpenAPI params dropped, causing bare KeyError('realm').",
+  "source": ".specs/features/openapi-path-level-params/Tasks.md",
   "testCommands": {
-    "unit": "pytest"
+    "unit": "pytest tests/test_parser.py",
+    "full": "pytest"
   },
   "executionWaves": {
-    "wave1_serial": [
-      1
-    ],
-    "wave2_parallel": [
-      2,
-      3,
-      4
-    ],
-    "wave3_serial": [
-      5
-    ],
-    "wave4_serial": [
-      6
-    ],
-    "wave5_serial": [
-      7
-    ],
-    "wave6_serial": [
-      8
-    ]
+    "wave1_serial": [1],
+    "wave2_serial": [2],
+    "wave3_serial": [3],
+    "wave4_serial": [4],
+    "wave5_serial": [5]
   },
-  "criticalPath": [
-    1,
-    2,
-    5,
-    6,
-    7
-  ],
+  "criticalPath": [1, 2, 3, 4, 5],
   "parallelizationNotes": {
-    "wave2": "T1.1/T1.2 (parser summary+param desc) and T1.3 (validator schema merge) all depend only on T0.1 (model fields) — safe to run in parallel.",
-    "wave3": "Generator (task 5) needs both model fields (1) and parser summary read (2) — param-description tasks (3,4) not required for generator, only for schema output."
+    "wave1": "T1 has no deps, extracts path_level_params in parse_spec.",
+    "wave2": "T2 depends on T1, same function signature change — do together in one edit.",
+    "wave3": "T3 full suite regression gate, sequential after fix lands.",
+    "wave4": "T4 real-spec assertion, sequential after suite green.",
+    "wave5": "T5 manual MCP tool check, final verification step."
   }
 }
