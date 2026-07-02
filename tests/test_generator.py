@@ -140,6 +140,36 @@ async def test_generated_tool_calls_http_and_returns_result():
     assert result.is_error is not True
 
 
+def test_read_only_filters_non_get_operations():
+    http_client = HttpClient(httpx.AsyncClient(base_url=BASE_URL))
+    auth_manager = ClientCredentialsAuthManager(
+        make_settings(), httpx.AsyncClient(base_url=BASE_URL)
+    )
+
+    tools, report = generate_tools(
+        make_operations(), auth_manager, http_client, read_only=True
+    )
+
+    tool_names = {t.name for t in tools}
+    assert "createThing" not in tool_names
+    assert all(name.startswith("getThing") for name in tool_names)
+    assert "createThing" in report.blocked
+    assert "createThing" not in report.succeeded
+    assert "createThing" not in report.failed
+
+
+def test_read_only_false_keeps_default_behavior():
+    http_client = HttpClient(httpx.AsyncClient(base_url=BASE_URL))
+    auth_manager = ClientCredentialsAuthManager(
+        make_settings(), httpx.AsyncClient(base_url=BASE_URL)
+    )
+
+    tools, report = generate_tools(make_operations(), auth_manager, http_client)
+
+    assert len(tools) == 5
+    assert report.blocked == []
+
+
 @respx.mock
 async def test_invalid_input_never_reaches_http_client():
     route = respx.get(f"{BASE_URL}/admin/realms/main/thing0").mock(

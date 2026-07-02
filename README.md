@@ -16,15 +16,16 @@ uvx --from git+https://github.com/Ronnasayd/keyclock-mcp-server keycloak-mcp-ser
 
 Set via environment variables (or a `.env` file — **never commit it**, see `.gitignore`):
 
-| Var                           | Required    | Notes                              |
-| ----------------------------- | ----------- | ---------------------------------- |
-| `MCP_KEYCLOCK_BASE_URL`       | yes         | Admin API base URL                 |
-| `MCP_KEYCLOCK_AUTH_METHOD`    | yes         | `client_credentials` \| `password` |
-| `MCP_KEYCLOCK_CLIENT_ID`      | conditional | both auth methods                  |
-| `MCP_KEYCLOCK_CLIENT_SECRET`  | conditional | `client_credentials` only          |
-| `MCP_KEYCLOCK_ADMIN_USERNAME` | conditional | `password` only                    |
-| `MCP_KEYCLOCK_ADMIN_PASSWORD` | conditional | `password` only                    |
-| `MCP_KEYCLOCK_DEFAULT_REALM`  | no          | fallback realm if tool omits it    |
+| Var                           | Required    | Notes                                                                      |
+| ----------------------------- | ----------- | -------------------------------------------------------------------------- |
+| `MCP_KEYCLOCK_BASE_URL`       | yes         | Admin API base URL                                                         |
+| `MCP_KEYCLOCK_AUTH_METHOD`    | yes         | `client_credentials` \| `password`                                         |
+| `MCP_KEYCLOCK_CLIENT_ID`      | conditional | both auth methods                                                          |
+| `MCP_KEYCLOCK_CLIENT_SECRET`  | conditional | `client_credentials` only                                                  |
+| `MCP_KEYCLOCK_ADMIN_USERNAME` | conditional | `password` only                                                            |
+| `MCP_KEYCLOCK_ADMIN_PASSWORD` | conditional | `password` only                                                            |
+| `MCP_KEYCLOCK_DEFAULT_REALM`  | no          | fallback realm if tool omits it                                            |
+| `MCP_KEYCLOCK_READ_ONLY`      | no          | default `false`; when `true`, only GET operations are exposed as MCP tools |
 
 ### Auth methods
 

@@ -47,6 +47,7 @@ def build_server(
         auth_manager,
         admin_http_client,
         default_realm=settings.default_realm,
+        read_only=settings.read_only,
     )
 
     mcp = FastMCP(name="keycloak-mcp-server", tools=tools)

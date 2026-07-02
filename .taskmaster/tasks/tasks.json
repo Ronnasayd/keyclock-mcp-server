@@ -576,5 +576,109 @@
         }
       }
     ]
+  },
+  "mcp-keycloak-read-only": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Add read_only field to Settings",
+        "description": "Add read_only: bool = False to Settings in src/keycloak_mcp/config.py",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Where: src/keycloak_mcp/config.py. Reuses existing SettingsConfigDict(env_prefix=\"MCP_KEYCLOCK_\") - no custom parsing needed. Done when: Settings(read_only=True) and env MCP_KEYCLOCK_READ_ONLY=true both yield True. Gate: type-check passes.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 1,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 2,
+        "title": "Add blocked field to GenerationReport",
+        "description": "Add blocked: list[str] = field(default_factory=list) to GenerationReport in src/keycloak_mcp/tools/generator.py",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "details": "Where: src/keycloak_mcp/tools/generator.py. Reuses existing succeeded/failed dataclass field pattern. Done when: GenerationReport().blocked == []. Gate: import/compile check.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 2,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 3,
+        "title": "Filter non-GET operations in generate_tools",
+        "description": "Add read_only: bool = False param to generate_tools; skip non-GET operations into report.blocked when read_only is True",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "details": "Where: src/keycloak_mcp/tools/generator.py:75-104. Reuses existing per-operation loop and try/except structure. Done when: with read_only=True, only GET-method operations appear in returned tools; others land in report.blocked, not succeeded/failed. Gate: full test gate for module.",
+        "testStrategy": "unit test covering filtering behavior (see task 5)",
+        "subtasks": [],
+        "metadata": {
+          "wave": 3,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 4,
+        "title": "Wire settings.read_only into build_server",
+        "description": "Pass read_only=settings.read_only into the generate_tools(...) call in build_server",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "details": "Where: src/keycloak_mcp/server.py:45-50. Reuses existing build_server signature (no change). Done when: build_server(settings) with settings.read_only=True produces FastMCP instance whose tool list excludes non-GET operations. Gate: full test gate.",
+        "testStrategy": "covered by generator-level unit test (task 5)",
+        "subtasks": [],
+        "metadata": {
+          "wave": 4,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 5,
+        "title": "Unit test for read-only filtering",
+        "description": "Add test mirroring existing generator tests: build generate_tools with read_only=True over mix of GET/POST operations, assert only GET tool names appear and non-GET ids land in report.blocked; assert default behavior unchanged",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "details": "Where: tests/ (co-located with existing tools/generator tests). Reuses existing test fixtures/operation builders. Done when: new tests pass; full pytest suite green. Gate: pytest full run passes.",
+        "testStrategy": "this task is the test itself",
+        "subtasks": [],
+        "metadata": {
+          "wave": 5,
+          "onCriticalPath": true
+        }
+      },
+      {
+        "id": 6,
+        "title": "Document MCP_KEYCLOCK_READ_ONLY in README",
+        "description": "Add row to env var table in README.md for MCP_KEYCLOCK_READ_ONLY - optional, default false, boolean, restricts server to GET-only operations",
+        "status": "done",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "details": "Where: README.md near lines 15-27. Reuses existing table format. Done when: table includes new row with correct default/description. Gate: manual read-through.",
+        "testStrategy": "none",
+        "subtasks": [],
+        "metadata": {
+          "wave": 5,
+          "onCriticalPath": false
+        }
+      }
+    ]
   }
 }

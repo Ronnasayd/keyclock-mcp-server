@@ -26,6 +26,7 @@ def _to_text_content(value: Any) -> TextContent:
 class GenerationReport:
     succeeded: list[str] = field(default_factory=list)
     failed: list[str] = field(default_factory=list)
+    blocked: list[str] = field(default_factory=list)
 
 
 class GeneratedTool(Tool):
@@ -77,6 +78,7 @@ def generate_tools(
     auth_manager: AuthManager,
     http_client: HttpClient,
     default_realm: str | None = None,
+    read_only: bool = False,
 ) -> tuple[list[GeneratedTool], GenerationReport]:
     tools: list[GeneratedTool] = []
     report = GenerationReport()
@@ -85,6 +87,9 @@ def generate_tools(
         try:
             if not operation.operation_id:
                 raise ValueError("operation_id must not be empty")
+            if read_only and operation.method.upper() != "GET":
+                report.blocked.append(operation.operation_id)
+                continue
             tools.append(
                 GeneratedTool(
                     name=operation.operation_id,

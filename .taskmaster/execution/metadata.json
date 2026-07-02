@@ -1,27 +1,23 @@
 {
-  "projectName": "openapi-path-level-params",
+  "projectName": "mcp-keycloak-read-only",
   "version": "1.0.0",
   "createdAt": "2026-07-02T00:00:00Z",
   "updatedAt": "2026-07-02T00:00:00Z",
-  "description": "Fix path-level OpenAPI params dropped, causing bare KeyError('realm').",
-  "source": ".specs/features/openapi-path-level-params/Tasks.md",
+  "description": "Add MCP_KEYCLOCK_READ_ONLY env var to filter non-GET Keycloak operations out of generated MCP tools",
+  "source": ".specs/features/mcp-keycloak-read-only/Tasks.md",
   "testCommands": {
-    "unit": "pytest tests/test_parser.py",
-    "full": "pytest"
+    "unit": "pytest"
   },
   "executionWaves": {
     "wave1_serial": [1],
     "wave2_serial": [2],
     "wave3_serial": [3],
     "wave4_serial": [4],
-    "wave5_serial": [5]
+    "wave5_parallel": [5, 6]
   },
   "criticalPath": [1, 2, 3, 4, 5],
   "parallelizationNotes": {
-    "wave1": "T1 has no deps, extracts path_level_params in parse_spec.",
-    "wave2": "T2 depends on T1, same function signature change — do together in one edit.",
-    "wave3": "T3 full suite regression gate, sequential after fix lands.",
-    "wave4": "T4 real-spec assertion, sequential after suite green.",
-    "wave5": "T5 manual MCP tool check, final verification step."
+    "wave1-wave4": "Strictly sequential - each builds directly on the prior file change (config -> report shape -> filtering logic -> wiring)",
+    "wave5": "T5 (unit test) and T6 (README doc) both depend only on T4 and touch disjoint files - safe to run in parallel"
   }
 }

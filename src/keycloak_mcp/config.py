@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     admin_username: str | None = None
     admin_password: str | None = None
     default_realm: str | None = None
+    read_only: bool = False
 
     @model_validator(mode="after")
     def validate_auth_fields(self) -> "Settings":
