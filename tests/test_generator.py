@@ -54,6 +54,59 @@ def make_operations() -> list[Operation]:
     return [*good_ops, with_body, malformed]
 
 
+def test_tool_description_uses_summary_only():
+    op = Operation(
+        operation_id="getThing", method="get", path="/thing", summary="Get thing"
+    )
+    http_client = HttpClient(httpx.AsyncClient(base_url=BASE_URL))
+    auth_manager = ClientCredentialsAuthManager(
+        make_settings(), httpx.AsyncClient(base_url=BASE_URL)
+    )
+    tools, _ = generate_tools([op], auth_manager, http_client)
+    assert tools[0].description == "Get thing"
+
+
+def test_tool_description_uses_description_only():
+    op = Operation(
+        operation_id="getThing",
+        method="get",
+        path="/thing",
+        description="Fetches a thing.",
+    )
+    http_client = HttpClient(httpx.AsyncClient(base_url=BASE_URL))
+    auth_manager = ClientCredentialsAuthManager(
+        make_settings(), httpx.AsyncClient(base_url=BASE_URL)
+    )
+    tools, _ = generate_tools([op], auth_manager, http_client)
+    assert tools[0].description == "Fetches a thing."
+
+
+def test_tool_description_concatenates_summary_and_description():
+    op = Operation(
+        operation_id="getThing",
+        method="get",
+        path="/thing",
+        summary="Get thing",
+        description="Fetches a thing.",
+    )
+    http_client = HttpClient(httpx.AsyncClient(base_url=BASE_URL))
+    auth_manager = ClientCredentialsAuthManager(
+        make_settings(), httpx.AsyncClient(base_url=BASE_URL)
+    )
+    tools, _ = generate_tools([op], auth_manager, http_client)
+    assert tools[0].description == "Get thing\n\nFetches a thing."
+
+
+def test_tool_description_none_when_neither_present():
+    op = Operation(operation_id="getThing", method="get", path="/thing")
+    http_client = HttpClient(httpx.AsyncClient(base_url=BASE_URL))
+    auth_manager = ClientCredentialsAuthManager(
+        make_settings(), httpx.AsyncClient(base_url=BASE_URL)
+    )
+    tools, _ = generate_tools([op], auth_manager, http_client)
+    assert tools[0].description is None
+
+
 def test_generation_produces_correct_tool_count_and_skips_malformed():
     http_client = HttpClient(httpx.AsyncClient(base_url=BASE_URL))
     auth_manager = ClientCredentialsAuthManager(

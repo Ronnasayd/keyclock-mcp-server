@@ -4,11 +4,14 @@
     "/admin/realms": {
       "get": {
         "operationId": "getRealms",
+        "summary": "Get realms",
+        "description": "List all realms visible to the current user.",
         "parameters": [
           {
             "name": "briefRepresentation",
             "in": "query",
             "required": false,
+            "description": "Only return basic information.",
             "schema": { "type": "boolean" }
           }
         ],

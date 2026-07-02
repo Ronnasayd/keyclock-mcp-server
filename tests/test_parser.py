@@ -59,6 +59,38 @@ def test_request_body_ref_is_resolved_inline():
     assert schema["properties"]["accessTokenLifespan"] == {"type": "integer"}
 
 
+def test_operation_summary_and_description_parsed():
+    operations = parse_spec(load_fixture())
+    get_realms = next(op for op in operations if op.operation_id == "getRealms")
+    assert get_realms.summary == "Get realms"
+    assert get_realms.description == "List all realms visible to the current user."
+
+
+def test_operation_summary_and_description_default_to_none():
+    operations = parse_spec(load_fixture())
+    post_realms = next(
+        op for op in operations if op.path == "/admin/realms" and op.method == "post"
+    )
+    assert post_realms.summary is None
+    assert post_realms.description is None
+
+
+def test_param_description_parsed():
+    operations = parse_spec(load_fixture())
+    get_realms = next(op for op in operations if op.operation_id == "getRealms")
+    param = next(p for p in get_realms.params if p.name == "briefRepresentation")
+    assert param.description == "Only return basic information."
+
+
+def test_param_description_defaults_to_none():
+    operations = parse_spec(load_fixture())
+    post_realms = next(
+        op for op in operations if op.path == "/admin/realms" and op.method == "post"
+    )
+    param = next(p for p in post_realms.params if p.name == "realm")
+    assert param.description is None
+
+
 def test_request_body_ref_cycle_does_not_recurse_infinitely():
     operations = parse_spec(load_fixture())
     update_realm = next(op for op in operations if op.operation_id == "updateRealm")

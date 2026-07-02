@@ -18,7 +18,10 @@ def build_input_schema(operation: Operation) -> dict[str, Any]:
     required: list[str] = []
 
     for param in operation.params:
-        properties[param.name] = param.schema
+        param_schema = dict(param.schema)
+        if param.description is not None and "description" not in param_schema:
+            param_schema["description"] = param.description
+        properties[param.name] = param_schema
         if param.required:
             required.append(param.name)
 

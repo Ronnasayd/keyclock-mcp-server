@@ -12,6 +12,7 @@ class Param:
     location: ParamLocation
     required: bool
     schema: dict[str, Any] = field(default_factory=dict)
+    description: str | None = None
 
 
 @dataclass
@@ -30,3 +31,5 @@ class Operation:
     request_body: RequestBodySchema | None = None
     response_schema: dict[str, Any] = field(default_factory=dict)
     operation_id_synthesized: bool = False
+    summary: str | None = None
+    description: str | None = None

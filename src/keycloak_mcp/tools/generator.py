@@ -66,6 +66,12 @@ class GeneratedTool(Tool):
         return ToolResult(content=[_to_text_content(result)])
 
 
+def _build_tool_description(operation: Operation) -> str | None:
+    if operation.summary and operation.description:
+        return f"{operation.summary}\n\n{operation.description}"
+    return operation.description or operation.summary or None
+
+
 def generate_tools(
     operations: list[Operation],
     auth_manager: AuthManager,
@@ -82,6 +88,7 @@ def generate_tools(
             tools.append(
                 GeneratedTool(
                     name=operation.operation_id,
+                    description=_build_tool_description(operation),
                     parameters=build_input_schema(operation),
                     operation=operation,
                     auth_manager=auth_manager,

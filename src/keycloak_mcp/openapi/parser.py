@@ -43,6 +43,8 @@ def _parse_operation(
             params=_parse_params(raw_operation.get("parameters", []), spec),
             request_body=_parse_request_body(raw_operation.get("requestBody"), spec),
             response_schema=raw_operation.get("responses", {}),
+            summary=raw_operation.get("summary"),
+            description=raw_operation.get("description"),
         )
     except (AttributeError, TypeError, KeyError) as exc:
         logger.warning("skip malformed operation %s %s: %s", method, path, exc)
@@ -66,6 +68,7 @@ def _parse_params(raw_params: Any, spec: dict[str, Any]) -> list[Param]:
             location=raw_param["in"],
             required=raw_param.get("required", False),
             schema=_resolve_schema(raw_param.get("schema", {}), spec),
+            description=raw_param.get("description"),
         )
         for raw_param in raw_params
     ]
