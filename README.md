@@ -125,5 +125,5 @@ python scripts/sync_openapi.py             # overwrite spec/keycloak-openapi.jso
 ```bash
 uv venv
 uv pip install -e ".[dev]"
-pytest
+uv run pytest
 ```

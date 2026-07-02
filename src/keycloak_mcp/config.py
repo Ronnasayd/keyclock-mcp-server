@@ -7,7 +7,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="MCP_KEYCLOCK_", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="MCP_KEYCLOCK_", extra="ignore", populate_by_name=True
+    )
 
     keycloak_base_url: str = Field(validation_alias="MCP_KEYCLOCK_BASE_URL")
     auth_method: Literal["client_credentials", "password"]
