@@ -5,8 +5,9 @@ import json
 import logging
 from typing import Any, ClassVar
 
-from fastmcp.tools.tool import Tool, ToolResult
+from fastmcp.tools import Tool, ToolResult
 from mcp.types import TextContent
+from pydantic import ConfigDict
 
 from keycloak_mcp.auth.manager import AuthManager
 from keycloak_mcp.errors import JsonValue, KeycloakApiError
@@ -34,7 +35,7 @@ class GenerationReport:
 class GeneratedTool(Tool):
     """An MCP tool backed by a single OpenAPI operation."""
 
-    model_config: ClassVar[dict[str, bool]] = {"arbitrary_types_allowed": True}
+    model_config: ClassVar[ConfigDict] = ConfigDict(arbitrary_types_allowed=True)
 
     operation: Operation
     auth_manager: AuthManager

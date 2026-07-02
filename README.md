@@ -126,4 +126,6 @@ python scripts/sync_openapi.py             # overwrite spec/keycloak-openapi.jso
 uv venv
 uv pip install -e ".[dev]"
 uv run pytest
+uv run mypy .
+uv run ruff check .
 ```
